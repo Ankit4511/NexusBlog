@@ -9,7 +9,7 @@ const Home = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       const api = await axios.get(
-        `https://blog-application-lt7b.onrender.com/api/blogs/allblogs`,
+        `${import.meta.env.VITE_API_URL}/api/blogs/allblogs`,
         {
           withCredentials: true,
         },

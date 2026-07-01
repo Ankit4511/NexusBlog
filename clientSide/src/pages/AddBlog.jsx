@@ -26,7 +26,7 @@ const AddBlog = () => {
   const fetchBlogs = async () => {
 
     const api = await axios.get(
-      `https://blog-application-lt7b.onrender.com/api/blogs/blog/${auth.id}`,
+      `${import.meta.env.VITE_API_URL}/api/blogs/blog/${auth.id}`,
       {
         withCredentials: true,
       },
@@ -49,7 +49,7 @@ const AddBlog = () => {
     if(!auth.id){
       try {
       const api = await axios.post(
-        `https://blog-application-lt7b.onrender.com/api/blogs/create`,
+        `${import.meta.env.VITE_API_URL}/api/blogs/create`,
         {
           title,
           description,
@@ -104,7 +104,7 @@ const AddBlog = () => {
     else{
       try {
       const api = await axios.put(
-        `https://blog-application-lt7b.onrender.com/api/blogs/${auth.id}`,
+        `${import.meta.env.VITE_API_URL}/api/blogs/${auth.id}`,
         {
           title,
           description,

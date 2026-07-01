@@ -19,7 +19,7 @@ const Login = () => {
 
     try {
       const api = await axios.post(
-        `https://blog-application-lt7b.onrender.com/api/users/login`,
+  `${import.meta.env.VITE_API_URL}/api/users/login`,
         {
           email,
           password,

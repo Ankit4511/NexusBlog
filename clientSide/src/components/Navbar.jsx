@@ -16,7 +16,7 @@ const Navbar = () => {
   const logOut = async () => {
     try {
       const api = await axios.get(
-        `https://blog-application-lt7b.onrender.com/api/users/logout`,
+        `${import.meta.env.VITE_API_URL}/api/users/logout`,
         {
           headers: {
             'Content-Type': 'application/json',

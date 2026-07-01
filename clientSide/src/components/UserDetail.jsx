@@ -10,7 +10,7 @@ const UserDetail = ({id}) => {
 
     useEffect(() => {
     const fetchUser = async () => {
-      const api =  await axios.get(`https://blog-application-lt7b.onrender.com/api/users/${id}`,{
+      const api =  await axios.get(`${import.meta.env.VITE_API_URL}/api/users/${id}`,{
         headers: {
           "Content-Type": "application/json",
         },

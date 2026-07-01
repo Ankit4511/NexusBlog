@@ -18,7 +18,7 @@ const MyBlog = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       const api = await axios.get(
-        `https://blog-application-lt7b.onrender.com/api/blogs/myblogs`,
+        `${import.meta.env.VITE_API_URL}/api/blogs/myblogs`,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ const MyBlog = () => {
 
   const deleteBlog = async (id) => {
     const api = await axios.delete(
-      `https://blog-application-lt7b.onrender.com/api/blogs/${id}`,
+      `${import.meta.env.VITE_API_URL}/api/blogs/${id}`,
       {
         headers: {
           'Content-Type': 'application/json',
