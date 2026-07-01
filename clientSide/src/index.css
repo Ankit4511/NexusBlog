@@ -1,0 +1,29 @@
+.navbar{
+  background-color: blue;
+  padding: 10px;
+}
+
+.items{
+  text-decoration: none;
+  color: white;
+  padding: 5px;
+}
+
+.items:hover{
+  background-color: rgb(183, 176, 176);
+  color: black;
+  border-radius: 5px;
+}
+
+.right{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.left{
+  text-decoration: none;
+  color: white;
+  padding: 5px;
+}
+
