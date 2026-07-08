@@ -4,17 +4,23 @@ import Context from './Context';
 const State = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
-  const [id, setId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [bookmarkCount, setBookmarkCount] = useState(0);
 
   return (
     <Context.Provider
       value={{
         isAuthenticated,
         setIsAuthenticated,
+
         user,
         setUser,
-        id,
-         setId
+
+        searchQuery,
+        setSearchQuery,
+
+        bookmarkCount,
+        setBookmarkCount,
       }}
     >
       {children}

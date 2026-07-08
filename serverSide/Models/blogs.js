@@ -19,11 +19,30 @@ const blogSchema = new mongoose.Schema({
     ref: "User",  //schema Name
     required: true,
   },
+  views: {
+      type: Number,
+      default: 0,
+    },
+    status:{
+      type: String,
+      enum: ["draft", "published"],
+      default: "published",
+    },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+
+  
 });
 
 
+
+blogSchema.index({
+  createdAt: -1,
+});
+
+blogSchema.index({
+  views: -1,
+});
 export const Blog = mongoose.model("Blog", blogSchema);

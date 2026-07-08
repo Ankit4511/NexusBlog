@@ -1,171 +1,107 @@
-import { useState, useContext , useEffect} from 'react';
-import axios from 'axios';
-import { ToastContainer, toast, Bounce } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import Context from '../context/Context.jsx';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useNavigate, useParams } from "react-router-dom";
 
+import { createBlog, updateBlog, getBlogById } from "../services/blog.service";
 
-
-
+import Breadcrumb from "../components/editor/Breadcrumb";
+import EditorHeader from "../components/editor/EditorHeader";
+import EditorForm from "../components/editor/EditorForm";
+import EditorSidebar from "../components/editor/EditorSidebar";
+import PublishActions from "../components/editor/PublishActions";
+import PreviewCard from "../components/editor/PreviewCard";
 
 const AddBlog = () => {
-  const auth = useContext(Context);
   const navigate = useNavigate();
+  const { id } = useParams();
 
-  // console.log(auth);
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [imgUrl, setImgUrl] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("Programming");
+  const [tags, setTags] = useState("");
+  const [metaDescription, setMetaDescription] = useState("");
+  const [publishImmediately, setPublishImmediately] = useState(true);
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [imgUrl, setImgUrl] = useState('');
+  const [previewMode, setPreviewMode] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   useEffect(() => {
+    if (!id) return;
 
-  if (!auth.id) return;
+    const fetchBlog = async () => {
+      try {
+        const blog = await getBlogById(id);
 
-  const fetchBlogs = async () => {
+        setTitle(blog.title);
+        setDescription(blog.description);
+        setImgUrl(blog.imgUrl);
+        setPublishImmediately(blog.status !== "draft");
+      } catch (error) {
+        console.error(error);
 
-    const api = await axios.get(
-      `${import.meta.env.VITE_API_URL}/api/blogs/blog/${auth.id}`,
-      {
-        withCredentials: true,
-      },
-    );
+        toast.error("Failed to load blog.", {
+          position: "top-center",
+          autoClose: 1500,
+          theme: "dark",
+          transition: Bounce,
+        });
+      }
+    };
 
-    console.log(api.data.blog);
+    fetchBlog();
+  }, [id]);
 
-    setTitle(api.data.blog.title);
-    setDescription(api.data.blog.description);
-    setImgUrl(api.data.blog.imgUrl);
+  const handlePublish = async () => {
+    if (!title.trim() || !description.trim()) {
+      toast.error("Title and content are required.", {
+        position: "top-center",
+        autoClose: 1500,
+        theme: "dark",
+        transition: Bounce,
+      });
+      return;
+    }
+
+    setPublishing(true);
+
+    const status = publishImmediately ? "published" : "draft";
+
+    try {
+      let response;
+
+      if (!id) {
+        response = await createBlog({ title, description, imgUrl, status });
+      } else {
+        response = await updateBlog(id, { title, description, imgUrl, status });
+      }
+
+      toast.success(response.message, {
+        position: "top-center",
+        autoClose: 1500,
+        theme: "dark",
+        transition: Bounce,
+      });
+
+      setTimeout(() => {
+        navigate("/profile");
+      }, 1500);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Something went wrong", {
+        position: "top-center",
+        autoClose: 1500,
+        theme: "dark",
+        transition: Bounce,
+      });
+    } finally {
+      setPublishing(false);
+    }
   };
 
-  fetchBlogs();
-
-}, [auth.id]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if(!auth.id){
-      try {
-      const api = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/blogs/create`,
-        {
-          title,
-          description,
-          imgUrl,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          withCredentials: true,
-        },
-      );
-
-      // console.log(api);
-      toast.success(api.data.message, {
-        position: 'top-center',
-        autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'dark',
-        transition: Bounce,
-      });
-
-      auth.setIsAuthenticated(true);
-
-      setTimeout(() => {
-        navigate('/profile');
-      }, 1500);
-                   
-      navigate('/profile');
-
-
-    } catch (err) {
-      // console.log(err.response.data);
-      toast.error(err.response.data.message, {
-        position: 'top-center',
-        autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'dark',
-        transition: Bounce,
-      });
-
-      auth.setIsAuthenticated(false);
-    }}
-    else{
-      try {
-      const api = await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/blogs/${auth.id}`,
-        {
-          title,
-          description,
-          imgUrl,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          withCredentials: true,
-        },
-      );
-
-      // console.log(api);
-      toast.success(api.data.message, {
-        position: 'top-center',
-        autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'dark',
-        transition: Bounce,
-      });
-
-      auth.setIsAuthenticated(true);
-
-      setTimeout(() => {
-        navigate('/profile');
-      }, 1500);
-
-      auth.setId("");
-      navigate('/profile');
-                   
-
-
-    } catch (err) {
-      // console.log(err.response.data);
-      toast.error(err.response.data.message, {
-        position: 'top-center',
-        autoClose: 1500,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'dark',
-        transition: Bounce,
-      });
-
-      auth.setIsAuthenticated(false);
-    }
-    }
-    
-
-                            
-
-    
-
-    // console.log(name, email, password);
+  const handleCancel = () => {
+    navigate("/profile");
   };
 
   return (
@@ -173,76 +109,65 @@ const AddBlog = () => {
       <ToastContainer
         position="top-center"
         autoClose={1500}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick={false}
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
         theme="dark"
         transition={Bounce}
       />
 
-      <div className="container py-4 mt-5" style={{ width: '45%' }}>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6 pb-24">
+        <Breadcrumb />
 
-        {
-          (auth.id) ? <h2 className="text-white mb-3 text-center my-3">Edit Blog</h2> : <h2 className="text-white mb-3 text-center my-3">Add New Blog</h2>
-        }
+        <EditorHeader
+          previewMode={previewMode}
+          setPreviewMode={setPreviewMode}
+          isEdit={Boolean(id)}
+          onCancel={handleCancel}
+          onPublish={handlePublish}
+          publishing={publishing}
+        />
 
+        {previewMode ? (
+          <PreviewCard
+            title={title}
+            subtitle={subtitle}
+            description={description}
+            imgUrl={imgUrl}
+            category={category}
+            tags={tags}
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="lg:col-span-2">
+              <EditorForm
+                title={title}
+                setTitle={setTitle}
+                subtitle={subtitle}
+                setSubtitle={setSubtitle}
+                imgUrl={imgUrl}
+                setImgUrl={setImgUrl}
+                description={description}
+                setDescription={setDescription}
+              />
+            </div>
 
+            <div className="lg:col-span-1 space-y-6">
+              <EditorSidebar
+                imgUrl={imgUrl}
+                category={category}
+                setCategory={setCategory}
+                tags={tags}
+                setTags={setTags}
+                description={description}
+              />
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3 my-3">
-            <label htmlFor="exampleInputTitle" className="form-label">
-              Title
-            </label>
-
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              type="text"
-              className="form-control"
-              id="exampleInputTitle"
-              aria-describedby="titleHelp"
-            />
+              <PublishActions
+                metaDescription={metaDescription}
+                setMetaDescription={setMetaDescription}
+                publishImmediately={publishImmediately}
+                setPublishImmediately={setPublishImmediately}
+              />
+            </div>
           </div>
-
-          <div className="mb-3">
-            <label htmlFor="exampleInputDescription" className="form-label">
-              Description
-            </label>
-
-            <input
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              type="text"
-              className="form-control"
-              id="exampleInputDescription"
-              aria-describedby="descriptionHelp"
-            />
-          </div>
-
-          <div className="mb-3">
-            <label htmlFor="exampleInputImgUrl" className="form-label">
-              ImgUrl
-            </label>
-
-            <input
-              value={imgUrl}
-              onChange={(e) => setImgUrl(e.target.value)}
-              type="text"
-              className="form-control"
-              id="exampleInputImgUrl"
-            />
-          </div>
-
-          <div className="d-grid gap-2 my-3">
-            {
-              (auth.id) ? <button type="submit" className="btn btn-primary">Edit Blog</button> : <button type="submit" className="btn btn-primary">Add Blog</button>
-            }
-          </div>
-        </form>
+        )}
       </div>
     </>
   );

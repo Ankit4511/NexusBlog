@@ -15,6 +15,38 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  bio: {
+    type: String,
+    default: "",
+  },
+  avatar: {
+    type: String,
+    default: "",
+  },
+  location: {
+    type: String,
+    default: "",
+  },
+  github: {
+    type: String,
+    default: "",
+  },
+  linkedin: {
+    type: String,
+    default: "",
+  },
+  portfolio: {
+    type: String,
+    default: "",
+  },
+  resetPasswordToken:{
+    type: String,
+    default: undefined,
+  },
+  resetPasswordExpire:{
+    type: Date,
+    default: undefined,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

@@ -1,74 +1,55 @@
-import { useEffect, useState } from 'react';
-import React from 'react';
-import axios from 'axios';
-import UserDetail from '../components/UserDetail';
+import { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import Context from "../context/Context.jsx";
+import UserDetail from "../components/UserDetail";
+import { BookOpen, ArrowRight, Sparkles, Clock, SearchX } from "lucide-react";
+import HeroSection from "../components/HeroSection.jsx";
+import BlogCard from "../components/BlogCard";
+import LatestInsights from "../components/LatestInsights";
+import { getAllBlogs } from '../services/blog.service';
+import LikeButton from "../components/LikeButton";
 
 const Home = () => {
   const [blog, setBlog] = useState([]);
+  const auth = useContext(Context);
 
   useEffect(() => {
-    const fetchBlogs = async () => {
-      const api = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/blogs/allblogs`,
-        {
-          withCredentials: true,
-        },
-      );
+  const fetchBlogs = async () => {
+    try {
+      const blogs = await getAllBlogs();
+      setBlog(blogs);
+    } catch (error) {
+      console.error('Failed to fetch blogs:', error);
+    }
+  };
 
-      console.log(api.data.blogs);
+  fetchBlogs();
+}, []);
 
-      setBlog(api.data.blogs);
-    };
+  const query = auth.searchQuery?.trim().toLowerCase() || "";
 
-    fetchBlogs();
-  }, []);
+  const filteredBlog = query
+    ? blog.filter(
+        (b) =>
+          b.title?.toLowerCase().includes(query) ||
+          b.description?.toLowerCase().includes(query),
+      )
+    : blog;
+
+  const featured = !query ? filteredBlog[0] : null;
+  const rest = !query ? filteredBlog.slice(1) : filteredBlog;
 
   return (
-    <div className="container text-center my-5" style={{ width: '55%' }}>
-      {blog.map((data) => (
-        <React.Fragment key={data._id}>
-          <div
-            className="card mb-3 bg-secondary text-light my-5"
-            style={{ maxWidth: '750px', height: '250px' }}
-          >
-            <div
-              className="row g-0 h-100"
-              style={{ maxWidth: '750px', height: '250px' }}
-            >
-              <div
-                className="col-md-4 h-100"
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <img
-                  src={data.imgUrl}
-                  className="w-100 h-100 rounded"
-                  alt="..."
-                  style={{
-                    objectFit: 'cover',
-                  }}
-                />
-              </div>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-10">
+      {/* Hero: Featured Post */}
+      <HeroSection featured={featured} />
 
-              <div className="col-md-8">
-                <div className="card-body">
-                  <h3 className="card-title">{data.title}</h3>
-
-                  <p className="card-text">{data.description}</p>
-
-                  <p className="card-text">
-                    <small>{data.createdAt}</small>
-                  </p>
-                  <UserDetail id={data.user} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </React.Fragment>
-      ))}
+      {/* Grid of all posts */}
+      <LatestInsights
+        blogs={filteredBlog}
+        query={query}
+        searchQuery={auth.searchQuery}
+      />
     </div>
   );
 };

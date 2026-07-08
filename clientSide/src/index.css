@@ -1,29 +1,59 @@
-.navbar{
-  background-color: blue;
-  padding: 10px;
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-purple: #a855f7;
+  --color-brand-blue: #3b82f6;
+  --color-brand-dark: #0a0a0f;
+  --color-brand-card: #12121e;
 }
 
-.items{
-  text-decoration: none;
-  color: white;
-  padding: 5px;
+html, body {
+  background-color: var(--color-brand-dark);
 }
 
-.items:hover{
-  background-color: rgb(183, 176, 176);
-  color: black;
-  border-radius: 5px;
+/* Custom scrollbar styling to match the deep dark modern aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.right{
-  display: flex;
-  justify-content: center;
-  align-items: center;
+::-webkit-scrollbar-track {
+  background: #0d0d15;
 }
 
-.left{
-  text-decoration: none;
-  color: white;
-  padding: 5px;
+::-webkit-scrollbar-thumb {
+  background: #1e1e2f;
+  border-radius: 4px;
 }
 
+::-webkit-scrollbar-thumb:hover {
+  background: #2b2b45;
+}
+
+/* Custom glow animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
+/* Custom gradient background utility */
+.hero-gradient {
+  background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.05) 50%, transparent 100%);
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+}

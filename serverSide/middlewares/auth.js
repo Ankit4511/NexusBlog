@@ -1,29 +1,34 @@
-import jwt from 'jsonwebtoken'
-import cookieParser from 'cookie-parser';
-import {User} from '../Models/users.js'
+import jwt from "jsonwebtoken";
+import { User } from "../Models/users.js";
 
 export const isAuthenticated = async (req, res, next) => {
-  const {token} = req.cookies
+  console.log("===== AUTH =====");
+  console.log("Cookies:", req.cookies);
 
-  console.log(token);
+  const { token } = req.cookies;
 
-  if(!token) return res.status(401).json({
+  console.log("Token:", token);
+
+  if (!token) {
+    return res.status(401).json({
       success: false,
       message: "Please login first...!",
-  })
+    });
+  }
 
-  const decode = jwt.verify(token, process.env.JWT_SECRET)
-  // console.log("decode data:", decode);
+  try {
+    const decode = jwt.verify(token, process.env.JWT_SECRET);
 
-  req.user = await User.findById(decode._id)
+    req.user = await User.findById(decode._id).select("-password");
 
-//   console.log("my profile:", req.user);
+    next();
+  } catch (err) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid token",
+    });
+  }
+};
 
-  // res.json({
-  //   success: true,
-  //   message:"Hello..!",
-  //   user: req.user
-  // })
-  next();
 
-}                    
+
