@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import Context from "../context/Context";
 import { getProfile } from "../services/auth.service";
-import { getMyBookmarks } from "../services/bookmark.service";
+import { getMyBookmarks } from "../services/Bookmark.service";
 
 const AuthProvider = ({ children }) => {
   const auth = useContext(Context);

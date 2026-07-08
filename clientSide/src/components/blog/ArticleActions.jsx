@@ -6,7 +6,7 @@ import { getLikeStatus, toggleLike } from "../../services/like.service";
 import {
   getBookmarkStatus,
   toggleBookmark,
-} from "../../services/bookmark.service";
+} from "../../services/Bookmark.service";
 
 const ArticleActions = ({ blogId }) => {
   const auth = useContext(Context);

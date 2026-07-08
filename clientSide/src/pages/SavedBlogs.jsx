@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { Bookmark } from "lucide-react";
 import Context from "../context/Context.jsx";
 import BlogCard from "../components/BlogCard";
-import { getMyBookmarks } from "../services/bookmark.service";
+import { getMyBookmarks } from "../services/Bookmark.service";
 
 const SavedBlogs = () => {
   const auth = useContext(Context);
